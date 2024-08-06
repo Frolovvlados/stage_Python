@@ -1,0 +1,25 @@
+Задача 3: В PySpark приложении датафреймами(pyspark.sql.DataFrame) заданы продукты, категории и их связи. Каждому продукту может соответствовать несколько категорий или ни одной. 
+А каждой категории может соответствовать несколько продуктов или ни одного. Напиши метод на PySpark, который в одном датафрейме вернет все пары «Имя продукта – Имя категории» 
+и имена всех продуктов, у которых нет категорий.
+Решение: 
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as f
+SparkSession spark = SparkSession.builder \
+.appName("Products and Categories") \
+.getOrCreate()
+# Создаем датафреймы
+products_df = spark.createDataFrame(products_data, ["product_name"])
+categories_df = spark.createDataFrame(categories_data, ["category_name"])
+product_category_df = spark.createDataFrame(product_category_data, ["product_name", "category_name"])
+# Получим все пары "Имя продукта - Имя категории"
+product_category_pairs = product_category_df.select("product_name","category_name")
+# Находим продукты у которых нет категорий
+product_with_categories = product_category_df.select("product_name").distinct()
+product_without_categories = products_df.join(product_with_categories,"product_name","left_anti")
+# Получаем имена продуктов без категорий
+product_without_categories_list = product_without_categories.select("product_name").rdd.flatMap(lambda x: x).collect()
+# Выводим результат
+product_category_pairs.show()
+print("Продукты без категорий: ",product_without_categories_list)
+SparkSession spark.stop()
+
