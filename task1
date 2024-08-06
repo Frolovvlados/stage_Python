@@ -1,0 +1,43 @@
+Задача 1. Напиши на C# или Python библиотеку для поставки внешним клиентам, которая умеет вычислять площадь круга по радиусу и треугольника по трем сторонам. 
+Дополнительно к работоспособности оценим: юнит-тесты, легкость добавления других фигур, вычисление площади фигуры без знания типа фигуры в compile-time, 
+проверку на то, является ли треугольник прямоугольным.
+Решение:
+#Импортируем библиотеку math
+from math import *
+import unittest
+#Определяем функцию calculate_square_circle, которая считает площадь круга
+def calculate_square_circle(r):
+    Sc = pi * sqr(r)
+    return Sc
+#Определяем функцию calculate_square_triangle, которая определяет площадь треугольника
+def calculate_square_triangle(a,b,c):
+    p = (a + b + c) / 2
+    St = sqrt(p * (p - a) * (p - b) * (p - c))
+    return St
+#Определяем функцию is_right_triangle, которая принимает три стороны треугольника и возвращает True, если треугольник является прямоугольным, и False в противном случае
+def check_right_triangle(a, b, c):
+    l = [a, b, c]
+    max_l = max(l)
+    if (a == max_l):
+       return sqr(a) == sqr(b) + sqr(c)
+    if (b == max_l):
+       return sqr(b) == sqr(a) + sqr(c)
+    if (c == max_l):
+       return sqr(c) == sqr(a) + sqr(b)
+#Определяем класс Test_Square, который наследуется от unittest.TestCase в котором мы будем писать тесты
+class Test_Square(unittest.TestCase):
+#Определяем метод test_calculate_square_circle, который проверяет правильность вычисления площади круга с радиусом 2 (с точностью до 4 знаков после запятой)
+    def test_calculate_square_circle(self):
+        self.assertAlmostEqual(calculate_square_circle(2), 12.5664, places=4)
+
+#Определяем метод test_calculate_square_triangle, который проверяет правильность вычисления площади треугольника
+    def test_calculate_square_triangle(self):
+        self.assertAlmostEqual(calculate_square_triangle(2,4,5), 3.8)
+
+#Определяем метод test_right_triangle, который проверяет правильность определения прямоугольного треугольника 
+    def test_right_triangle(self):
+        self.assertTrue(check_right_triangle(1,1,sqrt(2)))
+        self.assertFalse(check_right_triangle(10,10,12))
+
+if __name__ == '__main__':
+    unittest.main(argv=['ignored', '-v'], exit=False)
